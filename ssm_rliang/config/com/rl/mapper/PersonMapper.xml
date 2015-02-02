@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+namespace:唯一标识一个映射文件的属性, 
+规范：使用当前映射文件的所在包名和映射文件的名字
+命名空间不能使用别名
+ -->
+<mapper namespace="com.rl.mapper.PersonMapper">
+	<resultMap type="person" id="BaseResultMap">
+		<id column="person_id" property="personId"/>
+		<result column="name" property="name"/>
+		<result column="gender" property="gender"/>
+		<result column="person_addr" property="personAddr"/>
+		<result column="birthday" property="birthday"/>
+	</resultMap>
+	
+	<!-- 公用的sql片段 ，sql片段中可以接收变量还可以使用动态sql
+		使用include标签来引用sql片段
+	-->
+	<sql id="columns">
+		PERSON_ID, NAME, GENDER, PERSON_ADDR, BIRTHDAY 
+	</sql>
+	<select id="selectPersonByIdWithRM" parameterType="int" resultMap="BaseResultMap" useCache="true">
+		select <include refid="columns"/> from person t where t.person_id = #{id}
+	</select>
+	
+	
+	<!-- ================================库表变更======================================= -->
+	
+	<insert id="insert" parameterType="person">
+		<!-- 
+			keyProperty:实体类里面的主键的属性
+			order:生成主键的sql和insert的插入顺序， mysql使用AFTER, oracle使用BEFORE
+			resultType：主键返回的数据类型
+			生成主键的sql：mysql  select LAST_INSERT_ID()
+					  oracle  select xxxx_sequence.nextval from dual
+		 -->
+		<selectKey keyProperty="personId" order="AFTER" resultType="int">
+			select LAST_INSERT_ID()
+		</selectKey>
+		insert into person (person_id, name, gender, person_addr, birthday)
+		values(#{personId}, #{name}, #{gender}, #{personAddr}, #{birthday})
+	</insert>
+	
+	
+	<!-- 
+		注意mysql delete不支持别名
+	 -->
+	<delete id="delete" parameterType="int">
+		delete from person WHERE person_id = #{personId}
+	</delete>
+	
+	<!-- ============================动态sql=============================== -->
+	
+	<!-- 
+		map.put("name" , "八戒");
+		map.put("gender" , 1);
+		map.put("personAddr" , "高老庄");
+		map.put("birthday" , new Date());
+		test:后面的表达式使用Map中的key来判空
+		<where>可以动态组装条件，可以智能处理第一个and使sql不报错
+	 -->
+	<select id="selectPersonByCondition" parameterType="map" resultMap="BaseResultMap">
+		select * from person p 
+		<where>
+			<if test="name != null">
+				p.name like '%${name}%'
+			</if>
+			<if test="gender != null">
+				and p.gender = #{gender}
+			</if>
+			<if test="personAddr != null">
+				and p.person_addr like '%${personAddr}%'
+			</if>
+			<if test="birthday != null">
+				<![CDATA[
+				and p.birthday < #{birthday}
+				]]>
+			</if>
+		</where>
+	</select>
+	
+	<!-- 
+		<set>可以做动态的修改，以后全部使用动态修改， <set>可以智能处理多出来的最后一个逗号
+		
+	 -->
+	<update id="dynamicUpdate" parameterType="person">
+		update person p 
+		<set>
+			<if test="name != null">
+				p.name = #{name},
+			</if>
+			<if test="gender != null">
+				p.gender = #{gender},
+			</if>
+			<if test="personAddr != null">
+				p.person_addr = #{personAddr},
+			</if>
+			<if test="birthday != null">
+				p.birthday = #{birthday}
+			</if>
+		</set>
+		where p.person_id = #{personId}
+	</update>
+	
+	
+	
+</mapper>
