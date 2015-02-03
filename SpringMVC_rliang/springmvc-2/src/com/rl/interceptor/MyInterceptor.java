@@ -19,7 +19,9 @@ public class MyInterceptor implements HandlerInterceptor {
 			throws Exception {
 		System.out.println("÷¥––◊Ó÷’¿πΩÿ...");
 		System.out.println("------------------------------------------");
-		ex.printStackTrace();
+		if(ex!=null){
+			ex.printStackTrace();
+		}
 		System.out.println("------------------------------------------");
 	}
 

@@ -194,6 +194,7 @@ public class TestController {
 	@RequestMapping("/ajax1.do")
 	public void ajax1(String name, PrintWriter out) throws Exception{
 		String result = name + " hello";
+		System.out.println(result);
 		out.write(result);
 	}
 	

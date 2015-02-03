@@ -54,10 +54,11 @@
 		<mvc:interceptors>
 			<mvc:interceptor>
 				<!-- 
-					配置拦截器的拦截范围如果拦截某一个命名空间下的请求如test  ,从根目录开始/test/**,   只要根目录后带有test的所有请求都会被拦截
-					如果想拦截所有的请求/**
+					配置拦截器的拦截范围(从根目录开始)
+					1. /interceptors/**   	只要根目录后带有interceptors的所有请求都会被拦截
+					2. /**		 	拦截所有的请求
 				 -->
-				<mvc:mapping path="/**"/>
+				<mvc:mapping path="/interceptors"/>
 				<!-- 
 					配置拦截器的类
 				 -->

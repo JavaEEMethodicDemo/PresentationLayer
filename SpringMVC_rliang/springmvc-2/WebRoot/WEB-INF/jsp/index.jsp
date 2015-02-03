@@ -28,6 +28,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     <h1>${person.address }</h1>
     <h1><fmt:formatDate value="${person.birthday }" pattern="yyyy-MM-dd"/>  </h1>
     <h1>${postHandlerTest } </h1>
-    <%=1/0 %>
+    
   </body>
 </html>
